@@ -38,22 +38,10 @@ func concat(sourceFilenames []string, outputFilename string) {
 	canvasWidth := 0
 	canvasHeight := 0
 
-	images := []image.Image{}
+	images := LoadImages(sourceFilenames)
 
-	for i := range sourceFilenames {
-		filename := sourceFilenames[i]
-		fmt.Println(filename)
-
-		src, _ := os.Open(filename)
-		defer src.Close()
-
-		srcImg, _, err := image.Decode(src)
-		if err != nil {
-			panic(err)
-		}
-
-		images = append(images, srcImg)
-
+	for i := range images {
+		srcImg := images[i]
 		canvasWidth += srcImg.Bounds().Size().X
 		canvasHeight = Max(canvasHeight, srcImg.Bounds().Size().Y)
 
@@ -80,6 +68,25 @@ func concat(sourceFilenames []string, outputFilename string) {
 	if err := jpeg.Encode(file, outputImage, &jpeg.Options{100}); err != nil {
 		panic(err)
 	}
+}
+
+func LoadImages(filenames []string) []image.Image {
+	images := []image.Image{}
+	for i := range filenames {
+		filename := filenames[i]
+		fmt.Println(filename)
+
+		src, _ := os.Open(filename)
+		defer src.Close()
+
+		srcImg, _, err := image.Decode(src)
+		if err != nil {
+			panic(err)
+		}
+
+		images = append(images, srcImg)
+	}
+	return images
 }
 
 func Max(x, y int) int {
