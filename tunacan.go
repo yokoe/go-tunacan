@@ -4,9 +4,10 @@ import (
 	"flag"
 	"fmt"
 	"image"
-	"image/draw"
 	"image/jpeg"
 	"os"
+
+	"golang.org/x/image/draw"
 )
 
 import _ "image/png"
@@ -40,10 +41,21 @@ func concat(sourceFilenames []string, outputFilename string) {
 
 	images := LoadImages(sourceFilenames)
 
-	for i := range images {
-		srcImg := images[i]
-		canvasWidth += srcImg.Bounds().Size().X
-		canvasHeight = Max(canvasHeight, srcImg.Bounds().Size().Y)
+	minHeight := images[0].Bounds().Size().Y
+	for _, srcImg := range images {
+		height := srcImg.Bounds().Size().Y
+		if height < minHeight {
+			minHeight = height
+		}
+	}
+
+	fmt.Println("Min height: ", minHeight)
+
+	canvasHeight = minHeight
+
+	for _, srcImg := range images {
+		scale := float64(minHeight) / float64(srcImg.Bounds().Size().Y)
+		canvasWidth += int(float64(srcImg.Bounds().Size().X) * scale)
 
 		fmt.Println(srcImg.Bounds().Size())
 	}
@@ -53,13 +65,14 @@ func concat(sourceFilenames []string, outputFilename string) {
 	outputImage := image.NewRGBA(image.Rect(0, 0, canvasWidth, canvasHeight))
 
 	x := 0
-	for i := range images {
-		srcImage := images[i]
+	for _, srcImg := range images {
+		scale := float64(minHeight) / float64(srcImg.Bounds().Size().Y)
+		scaledWidth := int(float64(srcImg.Bounds().Size().X) * scale)
 
-		srcRect := image.Rect(x, 0, srcImage.Bounds().Size().X+x, srcImage.Bounds().Size().Y)
-		draw.Draw(outputImage, srcRect, srcImage, image.Pt(0, 0), draw.Src)
+		targetRect := image.Rect(x, 0, scaledWidth+x, canvasHeight)
+		draw.BiLinear.Scale(outputImage, targetRect, srcImg, srcImg.Bounds(), draw.Over, nil)
 
-		x += srcImage.Bounds().Size().X
+		x += scaledWidth
 	}
 
 	file, _ := os.Create(outputFilename)
