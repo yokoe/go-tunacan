@@ -85,8 +85,7 @@ func concat(sourceFilenames []string, outputFilename string) {
 
 func LoadImages(filenames []string) []image.Image {
 	images := []image.Image{}
-	for i := range filenames {
-		filename := filenames[i]
+	for _, filename := range filenames {
 		fmt.Println(filename)
 
 		src, _ := os.Open(filename)
