@@ -26,5 +26,8 @@ func main() {
 	flag.StringVar(&outputFilename, "o", "", "Output filepath.")
 	flag.Parse()
 
-	concatenator.Concat(sourceFilenames, outputFilename)
+	err := concatenator.Concat(sourceFilenames, outputFilename)
+	if err != nil {
+		panic(err)
+	}
 }

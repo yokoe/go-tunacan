@@ -1,21 +1,26 @@
 package concatenator
 
 import (
+	"errors"
 	"fmt"
 	"image"
 	"image/jpeg"
 	"os"
 
 	"golang.org/x/image/draw"
+
+	_ "image/png"
 )
 
-import _ "image/png"
-
-func Concat(sourceFilenames []string, outputFilename string) {
+func Concat(sourceFilenames []string, outputFilename string) error {
 	canvasWidth := 0
 	canvasHeight := 0
 
 	images := loadImages(sourceFilenames)
+
+	if len(images) == 0 {
+		return errors.New("No valid input images.")
+	}
 
 	minHeight := images[0].Bounds().Size().Y
 	for _, srcImg := range images {
@@ -55,8 +60,10 @@ func Concat(sourceFilenames []string, outputFilename string) {
 	defer file.Close()
 
 	if err := jpeg.Encode(file, outputImage, &jpeg.Options{100}); err != nil {
-		panic(err)
+		return err
 	}
+
+	return nil
 }
 
 func loadImages(filenames []string) []image.Image {
