@@ -1,4 +1,4 @@
-package concatenator
+package main
 
 import (
 	"errors"
@@ -12,7 +12,7 @@ import (
 	_ "image/png"
 )
 
-func Concat(sourceFilenames []string, outputFilename string) error {
+func concat(sourceFilenames []string, outputFilename string) error {
 	canvasWidth := 0
 	canvasHeight := 0
 
