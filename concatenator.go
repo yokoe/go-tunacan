@@ -16,7 +16,11 @@ func concat(sourceFilenames []string, outputFilename string) error {
 	canvasWidth := 0
 	canvasHeight := 0
 
-	images := loadImages(sourceFilenames)
+	images, err := loadImages(sourceFilenames)
+
+	if err != nil {
+		return err
+	}
 
 	if len(images) == 0 {
 		return errors.New("No valid input images.")
@@ -66,7 +70,7 @@ func concat(sourceFilenames []string, outputFilename string) error {
 	return nil
 }
 
-func loadImages(filenames []string) []image.Image {
+func loadImages(filenames []string) ([]image.Image, error) {
 	images := []image.Image{}
 	for _, filename := range filenames {
 		fmt.Println(filename)
@@ -76,10 +80,10 @@ func loadImages(filenames []string) []image.Image {
 
 		srcImg, _, err := image.Decode(src)
 		if err != nil {
-			panic(err)
+			return nil, err
 		}
 
 		images = append(images, srcImg)
 	}
-	return images
+	return images, nil
 }
