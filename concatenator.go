@@ -13,9 +13,6 @@ import (
 )
 
 func concat(sourceFilenames []string, outputFilename string) error {
-	canvasWidth := 0
-	canvasHeight := 0
-
 	images, err := loadImages(sourceFilenames)
 
 	if err != nil {
@@ -26,7 +23,26 @@ func concat(sourceFilenames []string, outputFilename string) error {
 		return errors.New("No valid input images.")
 	}
 
-	minHeight := images[0].Bounds().Size().Y
+	outputImage := concatImages(images)
+
+	file, _ := os.Create(outputFilename)
+	defer file.Close()
+
+	if err := jpeg.Encode(file, outputImage, &jpeg.Options{100}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func concatImages(images []image.Image) image.Image {
+	canvasWidth := 0
+	canvasHeight := 0
+
+	minHeight := 0
+	if len(images) > 0 {
+		minHeight = images[0].Bounds().Size().Y
+	}
 	for _, srcImg := range images {
 		height := srcImg.Bounds().Size().Y
 		if height < minHeight {
@@ -59,15 +75,7 @@ func concat(sourceFilenames []string, outputFilename string) error {
 
 		x += scaledWidth
 	}
-
-	file, _ := os.Create(outputFilename)
-	defer file.Close()
-
-	if err := jpeg.Encode(file, outputImage, &jpeg.Options{100}); err != nil {
-		return err
-	}
-
-	return nil
+	return outputImage
 }
 
 func loadImages(filenames []string) ([]image.Image, error) {

@@ -17,3 +17,10 @@ func TestInvalidInput(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestNoImages(t *testing.T) {
+	outputImage := concatImages(nil)
+	if outputImage == nil {
+		t.Fail()
+	}
+}
