@@ -1,4 +1,4 @@
-package tunacan
+package main
 
 import (
 	"fmt"
@@ -8,6 +8,8 @@ import (
 
 	"image/jpeg"
 	_ "image/png"
+
+	"github.com/yokoe/tunacan"
 )
 
 const numMaxFiles = 5
@@ -67,7 +69,7 @@ func concatHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("%d files\n", len(images))
 
-	outputImage := concatImages(images)
+	outputImage := tunacan.ConcatImages(images)
 
 	fmt.Println("write to file")
 
