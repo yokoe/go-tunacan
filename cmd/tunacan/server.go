@@ -9,7 +9,7 @@ import (
 	"image/jpeg"
 	_ "image/png"
 
-	"github.com/yokoe/tunacan"
+	"github.com/yokoe/go-tunacan"
 )
 
 const numMaxFiles = 5
