@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"log"
 
 	tunacan "github.com/yokoe/go-tunacan"
 )
@@ -28,7 +29,8 @@ func (c *ConcatCommand) Run(args []string) int {
 
 	err := tunacan.Concat(sourceFilenames, outputFilename)
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
+		return 1
 	}
 	return 0
 }
