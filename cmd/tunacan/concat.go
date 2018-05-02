@@ -3,6 +3,8 @@ package main
 import (
 	"flag"
 	"log"
+	"os"
+	"strings"
 
 	tunacan "github.com/yokoe/go-tunacan"
 )
@@ -15,34 +17,32 @@ func (c *ConcatCommand) Synopsis() string {
 }
 
 func (c *ConcatCommand) Help() string {
-	return "Usage: tunacan concat -s file1.png -s file2.png -o output.png"
+	return "Usage: tunacan concat file1.png file2.png -o output.png"
 }
 
 func (c *ConcatCommand) Run(args []string) int {
 	var outputFilename string
-	var sourceFilenames arrayFlags
 
-	flags := flag.NewFlagSet("concat", flag.ContinueOnError)
-	flags.Var(&sourceFilenames, "s", "Source image filepaths.")
+	var inputFilenames = []string{}
+	prev_arg := ""
+	for _, arg := range args {
+		if !strings.HasPrefix(prev_arg, "-") && !strings.HasPrefix(arg, "-") {
+			inputFilenames = append(inputFilenames, arg)
+		}
+		prev_arg = arg
+	}
+
+	flags := flag.NewFlagSet(os.Args[0], flag.ContinueOnError)
 	flags.StringVar(&outputFilename, "o", "", "Output filepath.")
-	flags.Parse(args)
+	flags.Parse(os.Args[1:])
+	for 0 < flags.NArg() {
+		flags.Parse(flags.Args()[1:])
+	}
 
-	err := tunacan.Concat(sourceFilenames, outputFilename)
+	err := tunacan.Concat(inputFilenames, outputFilename)
 	if err != nil {
 		log.Fatalln(err)
 		return 1
 	}
 	return 0
-}
-
-// https://stackoverflow.com/questions/28322997/how-to-get-a-list-of-values-into-a-flag-in-golang?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
-type arrayFlags []string
-
-func (i *arrayFlags) String() string {
-	return "arrayFlags"
-}
-
-func (i *arrayFlags) Set(value string) error {
-	*i = append(*i, value)
-	return nil
 }
