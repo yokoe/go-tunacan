@@ -12,6 +12,22 @@ import (
 	"github.com/yokoe/go-tunacan"
 )
 
+type ServerCommand struct {
+}
+
+func (c *ServerCommand) Synopsis() string {
+	return "Launch HTTP server."
+}
+
+func (c *ServerCommand) Help() string {
+	return "Usage: tunacan server"
+}
+
+func (c *ServerCommand) Run(args []string) int {
+	launchServer()
+	return 0
+}
+
 const numMaxFiles = 5
 
 func loadImage(r *http.Request, paramName string) (image.Image, error) {
