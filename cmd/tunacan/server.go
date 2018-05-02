@@ -9,7 +9,7 @@ import (
 	"image/jpeg"
 	_ "image/png"
 
-	"github.com/yokoe/go-tunacan"
+	"github.com/yokoe/tunacan"
 )
 
 type ServerCommand struct {

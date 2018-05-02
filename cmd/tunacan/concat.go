@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	tunacan "github.com/yokoe/go-tunacan"
+	tunacan "github.com/yokoe/tunacan"
 )
 
 type ConcatCommand struct {
