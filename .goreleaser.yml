@@ -10,7 +10,7 @@ builds:
 brew:
   github:
     owner: yokoe
-    name: tunacan
+    name: homebrew-tunacan
 
   homepage: "https://github.com/yokoe/tunacan"
 
