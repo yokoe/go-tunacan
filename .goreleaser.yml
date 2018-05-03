@@ -1,6 +1,7 @@
 # .goreleaser.yml
 # Build customization
 builds:
+  - main: cmd/tunacan/main.go
   - binary: tunacan
     goos:
       - darwin
