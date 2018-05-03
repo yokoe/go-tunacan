@@ -7,3 +7,12 @@ builds:
       - darwin
     goarch:
       - amd64
+brew:
+  github:
+    owner: yokoe
+    name: tunacan
+
+  homepage: "https://github.com/yokoe/tunacan"
+
+  install: |
+    bin.install "tunacan"
