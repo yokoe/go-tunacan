@@ -1,0 +1,8 @@
+# .goreleaser.yml
+# Build customization
+builds:
+  - binary: tunacan
+    goos:
+      - darwin
+    goarch:
+      - amd64
