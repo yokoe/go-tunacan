@@ -1,6 +1,12 @@
 # go-tunacan
 Tunacan the Image concatenator written in golang
 
+## Install
+```
+brew tap yokoe/tunacan
+brew install tunacan
+```
+
 ## Usage
 
 ### CLI
