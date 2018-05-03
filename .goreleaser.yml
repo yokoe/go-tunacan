@@ -2,7 +2,7 @@
 # Build customization
 builds:
   - main: cmd/tunacan/main.go
-  - binary: tunacan
+    binary: tunacan
     goos:
       - darwin
     goarch:
