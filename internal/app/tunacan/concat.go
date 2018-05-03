@@ -1,4 +1,4 @@
-package main
+package tunacan
 
 import (
 	"flag"

@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/mitchellh/cli"
+	"github.com/yokoe/tunacan/internal/app/tunacan"
 )
 
 func main() {
@@ -13,10 +14,10 @@ func main() {
 
 	c.Commands = map[string]cli.CommandFactory{
 		"concat": func() (cli.Command, error) {
-			return &ConcatCommand{}, nil
+			return &tunacan.ConcatCommand{}, nil
 		},
 		"server": func() (cli.Command, error) {
-			return &ServerCommand{}, nil
+			return &tunacan.ServerCommand{}, nil
 		},
 	}
 
