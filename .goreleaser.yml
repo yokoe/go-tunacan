@@ -5,6 +5,7 @@ builds:
     binary: tunacan
     goos:
       - darwin
+      - linux
     goarch:
       - amd64
 brew:
