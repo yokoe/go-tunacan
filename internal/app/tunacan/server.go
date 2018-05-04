@@ -3,8 +3,13 @@ package tunacan
 import (
 	"fmt"
 	"image"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
+	"path/filepath"
+	"strconv"
+	"time"
 
 	"image/jpeg"
 	_ "image/png"
@@ -27,6 +32,8 @@ func (c *ServerCommand) Run(args []string) int {
 	launchServer()
 	return 0
 }
+
+var tmpDir string
 
 const numMaxFiles = 5
 
@@ -87,9 +94,12 @@ func concatHandler(w http.ResponseWriter, r *http.Request) {
 
 	outputImage := tunacan.ConcatImages(images)
 
-	fmt.Println("write to file")
+	timestamp := strconv.FormatInt(time.Now().UTC().UnixNano(), 10)
+	outputFilepath := filepath.Join(tmpDir, timestamp+".jpg")
 
-	f, err := os.Create("/tmp/tunacan.jpg")
+	fmt.Println("write to file: " + outputFilepath)
+
+	f, err := os.Create(outputFilepath)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -101,11 +111,20 @@ func concatHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprintf(w, "Done.")
+	fmt.Fprintf(w, outputFilepath)
 }
 
 func launchServer() {
 	fmt.Println("Server mode")
+	var err error
+
+	tmpDir, err = ioutil.TempDir("", "tunacan")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Temp directory: " + tmpDir)
+
 	http.HandleFunc("/concat", concatHandler)
 	http.ListenAndServe(":8080", nil)
 }
