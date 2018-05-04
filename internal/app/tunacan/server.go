@@ -1,6 +1,7 @@
 package tunacan
 
 import (
+	"encoding/json"
 	"fmt"
 	"image"
 	"io/ioutil"
@@ -33,9 +34,15 @@ func (c *ServerCommand) Run(args []string) int {
 	return 0
 }
 
+type Response struct {
+	Status string `json:"status"`
+	Url    string `json:"url"`
+}
+
 var tmpDir string
 
 const numMaxFiles = 5
+const imagesDirName = "images"
 
 func loadImage(r *http.Request, paramName string) (image.Image, error) {
 	file, _, err := r.FormFile(paramName)
@@ -95,7 +102,8 @@ func concatHandler(w http.ResponseWriter, r *http.Request) {
 	outputImage := tunacan.ConcatImages(images)
 
 	timestamp := strconv.FormatInt(time.Now().UTC().UnixNano(), 10)
-	outputFilepath := filepath.Join(tmpDir, timestamp+".jpg")
+	outputFilename := timestamp + ".jpg"
+	outputFilepath := filepath.Join(tmpDir, outputFilename)
 
 	fmt.Println("write to file: " + outputFilepath)
 
@@ -111,7 +119,9 @@ func concatHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprintf(w, outputFilepath)
+	imageUrl := "http://" + r.Host + "/" + imagesDirName + "/" + outputFilename
+
+	json.NewEncoder(w).Encode(Response{Status: "ok", Url: imageUrl})
 }
 
 func launchServer() {
@@ -126,5 +136,6 @@ func launchServer() {
 	fmt.Println("Temp directory: " + tmpDir)
 
 	http.HandleFunc("/concat", concatHandler)
+	http.Handle("/"+imagesDirName+"/", http.StripPrefix("/"+imagesDirName+"/", http.FileServer(http.Dir(tmpDir))))
 	http.ListenAndServe(":8080", nil)
 }
