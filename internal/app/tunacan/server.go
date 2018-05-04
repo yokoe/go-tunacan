@@ -2,6 +2,7 @@ package tunacan
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"image"
 	"io/ioutil"
@@ -30,7 +31,12 @@ func (c *ServerCommand) Help() string {
 }
 
 func (c *ServerCommand) Run(args []string) int {
-	launchServer()
+	port := "8080"
+	flags := flag.NewFlagSet("server", flag.ContinueOnError)
+	flags.StringVar(&port, "p", "8080", "Port number to listen.")
+	flags.Parse(args)
+
+	launchServer(port)
 	return 0
 }
 
@@ -124,8 +130,8 @@ func concatHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(Response{Status: "ok", Url: imageUrl})
 }
 
-func launchServer() {
-	fmt.Println("Server mode")
+func launchServer(port string) {
+	fmt.Println("Server listening at " + port)
 	var err error
 
 	tmpDir, err = ioutil.TempDir("", "tunacan")
@@ -137,5 +143,7 @@ func launchServer() {
 
 	http.HandleFunc("/concat", concatHandler)
 	http.Handle("/"+imagesDirName+"/", http.StripPrefix("/"+imagesDirName+"/", http.FileServer(http.Dir(tmpDir))))
-	http.ListenAndServe(":8080", nil)
+	if err := http.ListenAndServe(":"+port, nil); err != nil {
+		log.Fatal(err)
+	}
 }
