@@ -32,11 +32,13 @@ func (c *ServerCommand) Help() string {
 
 func (c *ServerCommand) Run(args []string) int {
 	port := "8080"
+	bucket := ""
 	flags := flag.NewFlagSet("server", flag.ContinueOnError)
 	flags.StringVar(&port, "p", "8080", "Port number to listen.")
+	flags.StringVar(&bucket, "b", "", "Cloud storage bucket name.")
 	flags.Parse(args)
 
-	launchServer(port)
+	launchServer(port, bucket)
 	return 0
 }
 
@@ -46,6 +48,7 @@ type Response struct {
 }
 
 var tmpDir string
+var bucketName string
 
 const numMaxFiles = 5
 const imagesDirName = "images"
@@ -127,19 +130,27 @@ func concatHandler(w http.ResponseWriter, r *http.Request) {
 
 	timestamp := strconv.FormatInt(time.Now().UTC().UnixNano(), 10)
 	filename := timestamp + ".jpg"
-	_, err = concatImagesToTempFile(images, filename)
+	tempFilepath, err := concatImagesToTempFile(images, filename)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	imageUrl := "http://" + r.Host + "/" + imagesDirName + "/" + filename
-
-	json.NewEncoder(w).Encode(Response{Status: "ok", Url: imageUrl})
+	if bucketName != "" {
+		uploadedUrl, err := uploadToCloudStorage(*tempFilepath, bucketName, filename, "image/jpeg")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		json.NewEncoder(w).Encode(Response{Status: "ok", Url: *uploadedUrl})
+	} else {
+		imageUrl := "http://" + r.Host + "/" + imagesDirName + "/" + filename
+		json.NewEncoder(w).Encode(Response{Status: "ok", Url: imageUrl})
+	}
 }
 
-func launchServer(port string) {
+func launchServer(port string, optBucketName string) {
 	fmt.Println("Server listening at " + port)
 	var err error
 
@@ -147,6 +158,8 @@ func launchServer(port string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	bucketName = optBucketName
 
 	fmt.Println("Temp directory: " + tmpDir)
 
