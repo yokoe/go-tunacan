@@ -69,6 +69,26 @@ func loadImage(r *http.Request, paramName string) (image.Image, error) {
 	return srcImage, nil
 }
 
+func concatImagesToTempFile(images []image.Image, filename string) (*string, error) {
+	outputImage := tunacan.ConcatImages(images)
+
+	outputFilepath := filepath.Join(tmpDir, filename)
+
+	fmt.Println("write to file: " + outputFilepath)
+
+	f, err := os.Create(outputFilepath)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	if err := jpeg.Encode(f, outputImage, &jpeg.Options{100}); err != nil {
+		return nil, err
+	}
+
+	return &outputFilepath, nil
+}
+
 func concatHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		http.Error(w, "Method not allowed.", http.StatusMethodNotAllowed)
@@ -105,27 +125,16 @@ func concatHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("%d files\n", len(images))
 
-	outputImage := tunacan.ConcatImages(images)
-
 	timestamp := strconv.FormatInt(time.Now().UTC().UnixNano(), 10)
-	outputFilename := timestamp + ".jpg"
-	outputFilepath := filepath.Join(tmpDir, outputFilename)
+	filename := timestamp + ".jpg"
+	_, err = concatImagesToTempFile(images, filename)
 
-	fmt.Println("write to file: " + outputFilepath)
-
-	f, err := os.Create(outputFilepath)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer f.Close()
 
-	if err := jpeg.Encode(f, outputImage, &jpeg.Options{100}); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	imageUrl := "http://" + r.Host + "/" + imagesDirName + "/" + outputFilename
+	imageUrl := "http://" + r.Host + "/" + imagesDirName + "/" + filename
 
 	json.NewEncoder(w).Encode(Response{Status: "ok", Url: imageUrl})
 }
