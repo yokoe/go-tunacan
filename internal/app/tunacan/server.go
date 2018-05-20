@@ -61,7 +61,7 @@ func concatImagesToTempFile(images []image.Image, filename string) (*string, err
 	}
 	defer f.Close()
 
-	if err := jpeg.Encode(f, outputImage, &jpeg.Options{100}); err != nil {
+	if err := jpeg.Encode(f, outputImage, &jpeg.Options{Quality: 100}); err != nil {
 		return nil, err
 	}
 

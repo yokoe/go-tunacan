@@ -28,7 +28,7 @@ func Concat(sourceFilenames []string, outputFilename string) error {
 	file, _ := os.Create(outputFilename)
 	defer file.Close()
 
-	if err := jpeg.Encode(file, outputImage, &jpeg.Options{100}); err != nil {
+	if err := jpeg.Encode(file, outputImage, &jpeg.Options{Quality: 100}); err != nil {
 		return err
 	}
 
