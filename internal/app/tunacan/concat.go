@@ -24,12 +24,12 @@ func (c *ConcatCommand) Run(args []string) int {
 	var outputFilename string
 
 	var inputFilenames = []string{}
-	prev_arg := ""
+	prevArg := ""
 	for _, arg := range args {
-		if !strings.HasPrefix(prev_arg, "-") && !strings.HasPrefix(arg, "-") {
+		if !strings.HasPrefix(prevArg, "-") && !strings.HasPrefix(arg, "-") {
 			inputFilenames = append(inputFilenames, arg)
 		}
-		prev_arg = arg
+		prevArg = arg
 	}
 
 	flags := flag.NewFlagSet(os.Args[0], flag.ContinueOnError)

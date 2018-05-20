@@ -40,7 +40,7 @@ func uploadToCloudStorage(localFilepath string, bucketName string, remoteFilenam
 	}
 
 	attr := writer.Attrs()
-	uploadedUrl := fmt.Sprintf("https://storage.googleapis.com/%s/%s", attr.Bucket, attr.Name)
+	uploadedURL := fmt.Sprintf("https://storage.googleapis.com/%s/%s", attr.Bucket, attr.Name)
 
-	return &uploadedUrl, nil
+	return &uploadedURL, nil
 }

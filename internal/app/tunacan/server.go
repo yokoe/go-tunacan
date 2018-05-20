@@ -20,7 +20,7 @@ import (
 
 type Response struct {
 	Status string `json:"status"`
-	Url    string `json:"url"`
+	URL    string `json:"url"`
 }
 
 var tmpDir string
@@ -114,15 +114,15 @@ func concatHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if bucketName != "" {
-		uploadedUrl, err := uploadToCloudStorage(*tempFilepath, bucketName, filename, "image/jpeg")
+		uploadedURL, err := uploadToCloudStorage(*tempFilepath, bucketName, filename, "image/jpeg")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		json.NewEncoder(w).Encode(Response{Status: "ok", Url: *uploadedUrl})
+		json.NewEncoder(w).Encode(Response{Status: "ok", URL: *uploadedURL})
 	} else {
-		imageUrl := "http://" + r.Host + "/" + imagesDirName + "/" + filename
-		json.NewEncoder(w).Encode(Response{Status: "ok", Url: imageUrl})
+		imageURL := "http://" + r.Host + "/" + imagesDirName + "/" + filename
+		json.NewEncoder(w).Encode(Response{Status: "ok", URL: imageURL})
 	}
 }
 
