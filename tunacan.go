@@ -12,6 +12,7 @@ import (
 	_ "image/png" // for PNG format Support
 )
 
+// Concat generates a new image file at outputFilename with image files given in sourceFilenames.
 func Concat(sourceFilenames []string, outputFilename string) error {
 	images, err := loadImages(sourceFilenames)
 
@@ -35,6 +36,7 @@ func Concat(sourceFilenames []string, outputFilename string) error {
 	return nil
 }
 
+// ConcatImages generates a new image with given images.
 func ConcatImages(images []image.Image) image.Image {
 	canvasWidth := 0
 
