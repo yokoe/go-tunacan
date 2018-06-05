@@ -37,7 +37,6 @@ func Concat(sourceFilenames []string, outputFilename string) error {
 
 func ConcatImages(images []image.Image) image.Image {
 	canvasWidth := 0
-	canvasHeight := 0
 
 	minHeight := 0
 	if len(images) > 0 {
@@ -52,7 +51,7 @@ func ConcatImages(images []image.Image) image.Image {
 
 	fmt.Println("Min height: ", minHeight)
 
-	canvasHeight = minHeight
+	canvasHeight := minHeight
 
 	for _, srcImg := range images {
 		scale := float64(minHeight) / float64(srcImg.Bounds().Size().Y)
