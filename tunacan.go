@@ -20,7 +20,7 @@ func Concat(sourceFilenames []string, outputFilename string) error {
 	}
 
 	if len(images) == 0 {
-		return errors.New("No valid input images.")
+		return errors.New("no valid input images")
 	}
 
 	outputImage := ConcatImages(images)
