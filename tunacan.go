@@ -9,7 +9,7 @@ import (
 
 	"golang.org/x/image/draw"
 
-	_ "image/png"
+	_ "image/png" // for PNG format Support
 )
 
 func Concat(sourceFilenames []string, outputFilename string) error {

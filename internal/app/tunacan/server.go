@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"image/jpeg"
-	_ "image/png"
+	_ "image/png" // for PNG format Support
 
 	"github.com/yokoe/tunacan"
 )
